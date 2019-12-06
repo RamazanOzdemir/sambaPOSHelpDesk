@@ -1,0 +1,99 @@
+{% extends 'base_layout.html' %}
+{% block title %}
+    <title>Mail Detay</title>
+{% endblock %}
+{% block content %}
+
+    <div class='mailDetail container position-relative ' id="dt">
+        <div class="row ">
+            <div class="row col-12  position-fixed info_detail p-1">
+
+                    <span class="col-4 text-truncate info__name h6">* {{messageBlock.name}}*</span>
+                    <span class="col-4 text-truncate info__email text-truncate">
+                        --{{messageBlock.email}}--
+                    </span>
+                    <span class="col-4 h6">Konu Başlığı: {{messageBlock.subject}}</span>
+
+            </div>
+            <div class="col-12 row" id="detail_content">
+            {% for message in messageBlock.messages.all %}
+                 <div class="col-12 p-0 ">
+
+                     {% if message.message_type == 'incoming' %}
+                        <div class="d-flex mt-1 mb-1">
+                            <div class="left_arrow align-self-end" ></div>
+                            <div class="rounded-right bg-light p-2 msg_fnt" style="max-width: 75%">
+                                {{message.body_html | safe}}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="d-flex justify-content-end mt-1 mb-1 " >
+                            <div class="rounded-left bg-success text-white p-2 msg_fnt " style="max-width: 75%">
+                                {{message.body_html | safe}}
+                            </div>
+                            <div class="right_arrow align-self-end" ></div>
+                            {%  for person in message.person.all %}
+                                <p class='rounded-circle text-white avatar_list align-self-end ml-1 mr-0'
+                                style='background:{{person.personColor}};'>
+                                    {{person.avatar}}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                 </div>
+
+            {% endfor %}
+            </div>
+            <div class=" reply_section ">
+                <textarea class=""></textarea>
+                <a href="#" class="reply_submit align-self-end  ">
+                    <i class="fas fa-paper-plane "></i>
+                </a>
+
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+{% endblock %}
+{% block page %}
+    <script type="text/javascript">
+    const mailDetail = document.getElementById('dt');
+
+let main_height=Math.floor($('.main').height());
+let detail_height;
+let textarae_height;
+
+$('textarea').each(function () {
+    textarae_height = this.scrollHeight;
+    this.setAttribute('style', 'height:' + (textarae_height) + 'px;overflow-y:hidden;resize: none; width:75vw;outline:none;border-radius:10px');
+    console.log(textarae_height);
+}).on('input', function () {
+    this.style.height = 'auto';
+    if(this.scrollHeight<200){
+        this.style.height = (this.scrollHeight) + 'px';
+        mailDetail.style.maxHeight= `${main_height-this.scrollHeight}px`;
+    }
+    else {
+        this.style.height = '200px';
+        this.style.overflow= 'auto';
+        mailDetail.style.maxHeight= `${main_height-200}px`;
+
+    }
+    mailDetail.style.overflow= "auto";
+    mailDetail.scrollTop = mailDetail.scrollHeight;
+    //$('.mailDetail').find('div').css("max-height",`${main_height-this.scrollHeight}`)
+});
+    console.log(main_height-textarae_height)
+    document.getElementById('dt').style.maxHeight= `${main_height-textarae_height}px`;
+    document.getElementById('dt').style.overflow= "auto";
+    $("#detail_content").css('margin-top', `${$('.info_detail ').height()+10}px`)
+    mailDetail.scrollTop = mailDetail.scrollHeight;
+
+
+    </script>
+{% endblock %}
